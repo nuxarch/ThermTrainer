@@ -1,21 +1,29 @@
+/*
+- plot temperature and voltage at the display realtime
+*/
+
 #include <Arduino.h>
-#include "Sensor.hpp"
+#include "Thermistor.hpp"
 
-
+#define HEATERPIN       18
+#define heaterOff       digitalWrite(HEATERPIN, LOW)
+#define heaterOn        digitalWrite(HEATERPIN, HIGH)
 Thermistor Therm(16);
-xTaskHandle taskBlinkHandle;
-void taskBlink(void * parameter){
+xTaskHandle taskSensorReading;
+void taskPlotTemp(void * parameter){
 
     for(;;){
         Serial.println("Thermistor - Voltage :"+String(Therm.ReadVoltage()));
-        Serial.println("           - Tempe   :"+String(Therm.ReadTemperature()));
+        Serial.println("           - Temp    :"+String(Therm.ReadTemperature()));
         vTaskDelay(100/portTICK_PERIOD_MS);
     }
 }
 void setup(){
+    pinMode(HEATERPIN, OUTPUT);
+    heaterOff;
     Serial.begin(115200);
     Serial.println("app begin");
-    xTaskCreate(taskBlink,"task blink", 4000,NULL,1,NULL);
+    xTaskCreate(taskPlotTemp,"task blink", 4000,NULL,1,&taskSensorReading);
 }
 
 void loop(){
