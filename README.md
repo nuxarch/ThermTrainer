@@ -1,0 +1,1 @@
+This project will read thermistor sensor and plot the signal inthe display
